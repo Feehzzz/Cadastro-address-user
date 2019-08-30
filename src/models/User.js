@@ -1,30 +1,41 @@
-const Sequelize = require('../database/server')
-const sequelize = require('sequelize');
 
 
-
-  const User = Sequelize.define('User', {
-    id:{
-      type: sequelize.DataTypes.UUIDV4,
-      defaultValue: sequelize.DataTypes.UUIDV4,
+module.exports = (sequelize, Datatypes) => {
+  const User = sequelize.define('User', {
+    id: {
+      type: Datatypes.UUID,
+      defaultValue: Datatypes.UUIDV4,
       primaryKey: true,
     },
     name: {
-      type: sequelize.STRING,
-      allowNull: false,
+      type: Datatypes.STRING,
+      validate: {
+        notEmpty: {
+          msg: "Cannot be blank"
+        }
+      }
     },
-    email: {
-      type: sequelize.STRING,
-      allowNull: false,
-    },
-    password: {
-      type: sequelize.STRING,
-      allowNull: false
-    },
-    wallet: {
-      type: sequelize.FLOAT,
-      default: 0
-    }
-  })
-  
-module.exports = User
+    address: [{
+      address_one: {
+        type: Datatypes.STRING
+      },
+      number: {
+        type: Datatypes.STRING
+      },
+      address_two: {
+        type: Datatypes.STRING
+      },
+      district: {
+        type: Datatypes.STRING
+      },
+      city: {
+        type: Datatypes.STRING
+      },
+      zip: {
+        type: Datatypes.STRING
+      }
+    }]
+  }
+  );
+  return User;
+}
