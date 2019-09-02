@@ -7,7 +7,7 @@ module.exports = (sequelize, Datatypes) => {
       defaultValue: Datatypes.UUIDV4,
       primaryKey: true,
     },
-    name: {
+    first_name: {
       type: Datatypes.STRING,
       validate: {
         notEmpty: {
@@ -15,7 +15,16 @@ module.exports = (sequelize, Datatypes) => {
         }
       }
     },
-    address: [{
+    last_name: {
+      type: Datatypes.STRING,
+      validate: {
+        notEmpty: {
+          msg: "Cannot be blank"
+        }
+      }
+    },
+    address: {
+      type: Datatypes.JSON,
       address_one: {
         type: Datatypes.STRING
       },
@@ -34,7 +43,7 @@ module.exports = (sequelize, Datatypes) => {
       zip: {
         type: Datatypes.STRING
       }
-    }]
+    },
   }
   );
   return User;

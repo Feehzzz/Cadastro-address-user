@@ -5,28 +5,55 @@ const axios = require('axios');
 
 
 routes.get('/', async (req,res) => {
- const user = await User.findAll()
-  res.render('layouts/index', {data: user})
-})
-routes.get('/new', async (req,res) => {
   try {
-    const res = await axios.get(`https://viacep.com.br/ws/${req.query.zip}/json/`)
-    return res.json(res.data)
+    let result = [];
+    const user = await User.findAll();
+    for(data in user){
+      result.push(user[data].dataValues)
+    }
+       
+    res.render('layouts/index', {data: result})
+    
+  } catch (error) {
+    res.redirect('/');
+
+  }
+})
+
+routes.get('/getaddress', async (req, res) =>{
+  try {
+    const result = await axios.get(`https://viacep.com.br/ws/${req.query.zip}/json/`);
+    const data = result.data;
+    if(data.erro === true){
+      return res.status(400).json({Error: "Falha na requisição do cep informado"});
+    }
+    return res.send(data);
   } catch (error) {
     
+    return res.status(400).json({Error: "Falha na requisição do cep informado"});
   }
- 
 })
 routes.post('/', async (req,res) => {
   try {
-    
-    const user = new User(req.body)
-    
-    await user.save()
-    res.redirect('/')
+    let {first_name, last_name, address1, address2, address3, number, city, state } = req.body;
+    first_name = first_name.toLowerCase();
+    last_name = last_name.toLowerCase();
+    const user = await User.create({
+      first_name,
+      last_name,
+      address: {
+        address1,
+        number,
+        address2,
+        address3,
+        city, state
+      }
+    });
+    res.redirect('/');
   } catch (error) {
-    res.redirect('/')
-    res.status(400).json({Error: "Erro na requisição, tente novamente"})
+    console.log(error)
+    
+    return res.status(400).json({Error: "Erro na requisição, tente novamente"})
   }
 })
 

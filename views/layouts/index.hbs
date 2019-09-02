@@ -1,32 +1,29 @@
 <div class='container'>
 
-  <form method="GET" action="/new">
+  <form action="/" method="POST">
     <div class="form-row">
-      <div class="col-md-3 mb-3">
+      <div class="col-md-4 mb-4">
         <label for="validationServer01">Nome</label>
-        <input type="text" class="form-control" id="validationServer01" name="firstName" placeholder="Ex: Anderson" required>
+        <input type="text" class="form-control" id="validationServer01" name="first_name" placeholder="Ex: Anderson"
+          required>
       </div>
 
-      <div class="col-md-3 mb-3">
+      <div class="col-md-5 mb-3">
         <label for="validationServer02">Sobrenome</label>
-        <input type="text" class="form-control" id="validationServer02" name="lastName" placeholder="Ex: Silva sauro" required>
+        <input type="text" class="form-control" id="validationServer02" name="last_name" placeholder="Ex: Silva sauro"
+          required>
       </div>
 
-      <div class="col-md-3 mb-3">
-        <label for="validationServerUsername">Nickname</label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroupPrepend3">@</span>
-          </div>
-          <input type="text" class="form-control" id="validationServerUsername" name="nickName" placeholder="Nickname"
-            aria-describedby="inputGroupPrepend3">
-        </div>
-      </div>
+
     </div>
 
     <div class="form-group">
       <label for="inputZip">CEP *</label>
-      <input type="text" class="form-control col-md-2" name="zip" id="inputZip" maxlength="9" required onblur="getCEP(this.value)">
+      <input type="text" class="form-control col-md-2" name="zip" id="inputZip" maxlength="8" required
+        onblur="getCEP(this.value)" placeholder="Ex: 38408097">
+      <div class="invalid-feedback">
+        CEP Inválido
+      </div>
     </div>
 
     <div class="form-row">
@@ -43,7 +40,8 @@
 
     <div class="form-group">
       <label for="inputAddress2">Complemento</label>
-      <input type="text" class="form-control col-md-9" name="address2" id="inputAddress2" placeholder="Apartamento, casa, fundos">
+      <input type="text" class="form-control col-md-9" name="address2" id="inputAddress2"
+        placeholder="Apartamento, casa, fundos">
     </div>
     <div class="form-group">
       <label for="inputAddress3">Bairro</label>
@@ -53,53 +51,102 @@
     <div class="form-row">
       <div class="form-group col-md-5">
         <label for="inputCity">Cidade</label>
-        <input type="text" class="form-control" name="city" id="inputCity">
+        <input type="text" class="form-control" name="city" id="inputCity" placeholder="Guarulhos">
       </div>
       <div class="form-group col-md-4">
-        <label for="inputState">Estado/UF</label>
-        <select id="inputState" class="form-control">
-          <option>Escolha...</option>
-          <option>...</option>
-        </select>
+        <label for="inputCity">Estado/UF</label>
+        <input type="text" class="form-control" name="state" id="inputState" placeholder="SP">
       </div>
     </div>
     <button type="submit" class="btn btn-primary">Cadastrar</button>
   </form>
 
-  <div class='container'>
-    <div class='row'>
-      {{#each data}}
-      <ul class="list-group list-group-horizontal">
-        {{#each this}}
-        <li class="list-group-item">{{this.name}}</li>
-        <li class="list-group-item">{{this.address}}</li>
+</div>
+</div>
+
+<div class='container'>
+  <div class='row'>
+    {{#if data}}
+    <table class="table table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Endereço</th>
+          <th scope="col">Bairro</th>
+          <th scope="col">Cidade</th>
+          <th scope="col">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each data}}
+        <tr>
+          <td>{{this.first_name}} {{this.last_name}}</td>
+          <td>{{this.address.address1}}, {{this.address.number}}</td>
+          <td>{{this.address.address3}}</td>
+          <td>{{this.address.city}}</td>
+          <td>{{this.address.state}}</td>
+        </tr>
         {{/each}}
-      </ul>
-      {{/each}}
+      </tbody>
+    </table>
+    {{else}}
+    <div class="container no-data">
+      <p>No data available</p>
     </div>
+    {{/if}}
   </div>
+</div>
 
-  <style>
-    .container {
-      margin-top: 10px
-    }
-  </style>
+<style>
+  .container {
+    margin-top: 10px
+  }
 
-  <script>
-  async function getCEP(cep){
-    let opt = document.createElement('option')
- 
-    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+  .no-data {
+    margin-left: 15px
+  }
+</style>
+
+<script>
+  async function getCEP(cep) {
+
+    const res = await fetch(`/getaddress?zip=${cep}`)
     const data = await res.json()
-      document.getElementById('inputAddress1').value = data.logradouro 
-      document.getElementById('inputAddress2').value = data.complemento
-      document.getElementById('inputAddress3').value = data.bairro
-      document.getElementById('inputCity').value = data.localidade
-      opt.text = data.uf
-      document.getElementById('inputState').appendChild(opt)
-      
-      
-     
+    if (res.status === 200) {
+      getElement(data)
+    } else {
+      wrongCep(cep)
+    }
+  }
+
+  function getElement(data) {
+    const zip = document.getElementById('inputZip');
+    zip.classList.remove('is-invalid');
+    const adress1 = document.querySelector('#inputAddress1');
+    const adress2 = document.querySelector('#inputAddress2');
+    const adress3 = document.querySelector('#inputAddress3');
+    const city = document.querySelector('#inputCity');
+    const state = document.querySelector('#inputState')
+
+    document.querySelector('#inputNumber').focus();
+
+    adress1.value = data.logradouro;
+    adress2.value = data.complemento;
+    adress3.value = data.bairro;
+    city.value = data.localidade;
+    state.value = data.uf
+
+    adress1.setAttribute('readonly', 'true');
+    adress3.setAttribute('readonly', 'true');
+    city.setAttribute('readonly', 'true');
+    state.setAttribute('readonly', 'true');
 
   }
-  </script>
+  function wrongCep() {
+    const zip = document.getElementById('inputZip');
+    zip.classList.add('is-invalid');
+    zip.value = '';
+    zip.focus();
+    return;
+  }
+</script>
