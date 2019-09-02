@@ -35,23 +35,32 @@ routes.get('/getaddress', async (req, res) =>{
 })
 routes.post('/', async (req,res) => {
   try {
-    let {first_name, last_name, address1, address2, address3, number, city, state } = req.body;
+    let {first_name, last_name, address1, address2, address3, number, city, state, zip } = req.body;
     first_name = first_name.toLowerCase();
     last_name = last_name.toLowerCase();
-    const user = await User.create({
-      first_name,
-      last_name,
-      address: {
-        address1,
-        number,
-        address2,
-        address3,
-        city, state
-      }
-    });
-    res.redirect('/');
+    if(!first_name || !last_name || !address1 || !address2 || !address3 || !number ){
+      res.redirect('/')
+    } else if(zip.length < 8){
+      res.redirect('/')
+    } else {
+      const user = await User.create({
+        first_name,
+        last_name,
+        address: {
+          address1,
+          number,
+          address2,
+          address3,
+          city, 
+          state,
+          zip
+        }
+      });
+      res.redirect('/');
+    }
+    
   } catch (error) {
-    console.log(error)
+    
     
     return res.status(400).json({Error: "Erro na requisição, tente novamente"})
   }
