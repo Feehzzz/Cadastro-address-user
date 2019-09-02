@@ -13,6 +13,8 @@ const app = express();
 // template engine
 app.engine('.hbs', handlebars({defaultLayout: '../main', extname: '.hbs'}));
 app.set('view engine', '.hbs');
+app.use(express.static(path.join(__dirname, './public')));
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false, limit: '5mb'}));
