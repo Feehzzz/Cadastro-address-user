@@ -35,10 +35,11 @@ routes.get('/getaddress', async (req, res) =>{
 })
 routes.post('/', async (req,res) => {
   try {
+    
     let {first_name, last_name, address1, address2, address3, number, city, state, zip } = req.body;
     first_name = first_name.toLowerCase();
     last_name = last_name.toLowerCase();
-    if(!first_name || !last_name || !address1 || !address2 || !address3 || !number ){
+    if(!first_name || !last_name || !address1 || !address3 || !address3 || !number){
       res.redirect('/')
     } else if(zip.length < 8){
       res.redirect('/')
