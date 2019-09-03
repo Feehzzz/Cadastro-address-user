@@ -1,5 +1,5 @@
 async function getCEP(cep) {
-
+  
   const res = await fetch(`/getaddress?zip=${cep}`)
   const data = await res.json()
   if (res.status === 200) {
@@ -10,7 +10,7 @@ async function getCEP(cep) {
 }
 
 function getElement(data) {
-  const zip = document.getElementById('inputZip');
+  const zip = document.querySelector('#inputZip');
   zip.classList.remove('is-invalid');
   const adress1 = document.querySelector('#inputAddress1');
   const adress2 = document.querySelector('#inputAddress2');
@@ -31,11 +31,4 @@ function getElement(data) {
   city.setAttribute('readonly', 'true');
   state.setAttribute('readonly', 'true');
 
-}
-function wrongCep() {
-  const zip = document.getElementById('inputZip');
-  zip.classList.add('is-invalid');
-  zip.value = '';
-  zip.focus();
-  return
 }
